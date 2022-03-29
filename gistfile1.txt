@@ -11,12 +11,33 @@ birdMove = 0
 grav = 0.1
 bg = pygame.transform.scale(pygame.image.load('assets/img/bg2.png'), (width, height))
 floorImage = pygame.transform.scale(pygame.image.load('assets/img/floor.png'), (width, 200))
-birdup=pygame.image.load('assets/img/red_bird_up_flap.png')
 bird = pygame.image.load('assets/img/red_bird_mid_flap.png')
+pipe = pygame.image.load('assets/img/pipe_green.png')
 birdRect = bird.get_rect(center=(50, 300))
+pipeList = []
 win = pygame.display.set_mode((width, height))
 
 clock = pygame.time.Clock()
+
+pipEvent = pygame.USEREVENT
+pygame.time.set_timer(pipEvent, 1000)
+
+
+def generatePipeRect():
+    pipeRect = pipe.get_rect(midtop=(300, 410))
+    return pipeRect
+
+
+def MovePipe(pipes):
+    for pipeRect in pipes:
+        pipeRect.centerx -= 5
+    return pipes
+
+
+def drawPipes(pipes):
+    for pipeRect in pipes:
+        win.blit(pipe, pipeRect)
+
 
 run = True
 while run:
@@ -28,13 +49,16 @@ while run:
             if event.key == pygame.K_SPACE:
                 birdMove = 0
                 birdMove -= 5
+        if event.type == pipEvent:
+            pipeList.append(generatePipeRect())
 
-    print(birdMove)
-
+    pipeList = MovePipe(pipeList)
+    drawPipes(pipeList)
     floorx -= 1
     birdMove += grav
     birdRect.centery += birdMove
     win.blit(bg, (0, 0))
+    drawPipes(pipeList)
 
     win.blit(bird, birdRect)
     win.blit(floorImage, (floorx, 570))
